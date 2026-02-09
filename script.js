@@ -13,6 +13,9 @@
       const totalExpenseEl = document.getElementById("total-expense");
       const totalBalanceEl = document.getElementById("total-balance");
       const reportAuthorInput = document.getElementById("report-author");
+      const FONT_FAMILY = "Jameel Noori Nastaleeq";
+      const FONT_WOFF2_PATH = "fonts/Jameel%20Noori%20Nastaleeq.woff2";
+      const FONT_WOFF_PATH = "fonts/Jameel%20Noori%20Nastaleeq.woff";
 
       let editId = null;
       const incomeTypes = new Set(["عطیہ", "وعدہ"]);
@@ -54,6 +57,19 @@
         const pad = (value) => String(value).padStart(2, "0");
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
       };
+
+      const resolveAssetUrl = (path) => new URL(path, window.location.href).href;
+
+      const getFontFaceCss = () => `
+      @font-face {
+        font-family: "${FONT_FAMILY}";
+        src: url("${resolveAssetUrl(FONT_WOFF2_PATH)}") format("woff2"),
+             url("${resolveAssetUrl(FONT_WOFF_PATH)}") format("woff");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      `;
 
       const calculateTotals = (records) => {
         const income = records
@@ -208,10 +224,11 @@
     <meta charset="utf-8" />
     <title>${escapeHtml(meta.title)} - رپورٹ</title>
     <style>
+      ${getFontFaceCss()}
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: "Jameel Noori Nastaleeq";
+        font-family: "${FONT_FAMILY}", "Noto Nastaliq Urdu", serif;
         color: #1c1b19;
         background: #fff;
       }
@@ -450,20 +467,52 @@
           return;
         }
 
-        const printWindow = window.open("", "_blank", "width=980,height=720");
-        if (!printWindow) {
+        const html = buildReportHtml(records, { mode: "print" });
+        const printFrame = document.createElement("iframe");
+        printFrame.setAttribute("title", "Print Report");
+        printFrame.style.position = "fixed";
+        printFrame.style.right = "0";
+        printFrame.style.bottom = "0";
+        printFrame.style.width = "0";
+        printFrame.style.height = "0";
+        printFrame.style.border = "0";
+        document.body.appendChild(printFrame);
+
+        const frameWindow = printFrame.contentWindow;
+        if (!frameWindow) {
+          printFrame.remove();
           alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
           return;
         }
 
-        printWindow.document.open();
-        printWindow.document.write(buildReportHtml(records, { mode: "print" }));
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.onload = () => {
-          printWindow.print();
-          printWindow.onafterprint = () => printWindow.close();
+        let printed = false;
+        const cleanup = () => {
+          printFrame.remove();
         };
+
+        const triggerPrint = () => {
+          if (printed) return;
+          printed = true;
+          frameWindow.focus();
+          frameWindow.print();
+          frameWindow.onafterprint = cleanup;
+          setTimeout(cleanup, 1500);
+        };
+
+        const frameDoc = frameWindow.document;
+        frameDoc.open();
+        frameDoc.write(html);
+        frameDoc.close();
+
+        printFrame.onload = () => {
+          setTimeout(triggerPrint, 100);
+        };
+
+        setTimeout(() => {
+          if (frameDoc.readyState === "complete") {
+            triggerPrint();
+          }
+        }, 350);
       };
 
       form.addEventListener("submit", (event) => {
