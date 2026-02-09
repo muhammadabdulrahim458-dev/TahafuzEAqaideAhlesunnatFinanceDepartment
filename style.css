@@ -1,0 +1,509 @@
+      @font-face {
+          font-family: "Jameel Noori Nastaleeq";
+          src: local("Jameel Noori Nastaleeq"), local("Jameel Noori"),
+              url("fonts/Jameel Noori Nastaleeq.woff2") format("woff2"),
+              url("fonts/Jameel Noori Nastaleeq.woff") format("woff");
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+      }
+
+      :root {
+          --bg: #f6f2ea;
+          --ink: #1c1b19;
+          --muted: #5a5247;
+          --primary: #1f5f4f;
+          --primary-dark: #134236;
+          --accent: #c79b48;
+          --accent-2: #f0d9a8;
+          --card: #ffffff;
+          --line: #e6ddcf;
+          --shadow: 0 20px 35px rgba(28, 27, 25, 0.12);
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      body {
+          margin: 0;
+          font-family: "Jameel Noori Nastaleeq";
+          background: radial-gradient(circle at top, #fff8ef 0%, var(--bg) 55%);
+          color: var(--ink);
+      }
+
+      .page {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+      }
+
+      header {
+          padding: 20px 18px 0;
+      }
+
+      .brand {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          text-align: center;
+      }
+
+      .brand-logo {
+          display: block;
+          width: min(70vw, 360px);
+          max-width: 360px;
+          height: auto;
+      }
+
+      .brand-title {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+      }
+
+      .brand-title h1 {
+          font-family: inherit;
+          font-size: 26px;
+          margin: 0;
+          color: var(--primary-dark);
+          font-weight: 400;
+      }
+
+      .brand-title p {
+          margin: 0;
+          font-size: 14px;
+          color: var(--muted);
+      }
+
+      .pill {
+          background: rgba(31, 95, 79, 0.12);
+          color: var(--primary);
+          padding: 6px 14px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+      }
+
+      .button {
+          border: none;
+          border-radius: 14px;
+          padding: 12px 16px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+      }
+
+      .button.primary {
+          background: var(--primary);
+          color: #fff;
+      }
+
+      .button.secondary {
+          background: #fff;
+          border: 1px solid var(--line);
+          color: var(--primary-dark);
+      }
+
+      .button.ghost {
+          background: #fff;
+          border: 1px dashed var(--line);
+          color: var(--muted);
+      }
+
+      .cta-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 10px;
+      }
+
+      main {
+          padding: 22px 18px 32px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+      }
+
+      .card {
+          background: var(--card);
+          border-radius: 18px;
+          padding: 16px;
+          border: 1px solid var(--line);
+          box-shadow: 0 10px 18px rgba(28, 27, 25, 0.07);
+      }
+
+      .crud {
+          display: grid;
+          gap: 16px;
+      }
+
+      .crud-form {
+          display: grid;
+          gap: 12px;
+      }
+
+      .field {
+          display: grid;
+          gap: 6px;
+      }
+
+      label {
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      input,
+      select,
+      textarea {
+          border: 1px solid var(--line);
+          border-radius: 12px;
+          padding: 10px 12px;
+          font-size: 14px;
+          font-family: inherit;
+          background: #fff;
+      }
+
+      textarea {
+          min-height: 90px;
+          resize: vertical;
+      }
+
+      .form-row {
+          display: grid;
+          gap: 10px;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .record-list {
+          display: grid;
+          gap: 10px;
+      }
+
+      .toolbar {
+          display: grid;
+          gap: 10px;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .toolbar-actions {
+          display: grid;
+          gap: 10px;
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
+
+      .report-meta {
+          display: grid;
+          gap: 10px;
+      }
+
+      .search {
+          position: relative;
+      }
+
+      .search input {
+          padding-right: 38px;
+      }
+
+      .search::after {
+          content: "🔍";
+          position: absolute;
+          left: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 14px;
+          opacity: 0.7;
+      }
+
+      .totals {
+          display: grid;
+          gap: 10px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .total-card {
+          border: 1px solid var(--line);
+          border-radius: 12px;
+          padding: 10px 12px;
+          background: linear-gradient(180deg, #f5fff7 0%, #ecf8f1 100%);
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 10px 22px rgba(19, 66, 54, 0.12);
+      }
+
+      .total-card span {
+          font-size: 11px;
+          color: var(--muted);
+      }
+
+      .total-card strong {
+          display: block;
+          font-size: 14px;
+          color: var(--primary-dark);
+          margin-top: 4px;
+      }
+
+      .total-card::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(31, 95, 79, 0.16), rgba(240, 217, 168, 0.22));
+          opacity: 0.85;
+          pointer-events: none;
+      }
+
+      .total-card::after {
+          content: "";
+          position: absolute;
+          top: -40%;
+          left: -30%;
+          width: 160%;
+          height: 160%;
+          background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+          transform: rotate(12deg);
+          opacity: 0.45;
+          pointer-events: none;
+      }
+
+      .total-card span,
+      .total-card strong {
+          position: relative;
+          z-index: 1;
+      }
+
+      .table-wrap {
+          width: 100%;
+          overflow-x: auto;
+          border-radius: 12px;
+          border: 1px solid var(--line);
+          background: #fff;
+      }
+
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 620px;
+      }
+
+      th,
+      td {
+          padding: 10px 12px;
+          text-align: right;
+          border-bottom: 1px solid var(--line);
+          font-size: 12px;
+      }
+
+      th {
+          background: #faf5ec;
+          color: var(--primary-dark);
+          font-weight: 700;
+          position: sticky;
+          top: 0;
+      }
+
+      tbody tr:nth-child(even) {
+          background: #fffdf9;
+      }
+
+      .row-actions {
+          display: flex;
+          gap: 6px;
+          justify-content: flex-start;
+      }
+
+      .table-btn {
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          padding: 6px 8px;
+          font-size: 11px;
+          background: #fff;
+          color: var(--primary-dark);
+          cursor: pointer;
+      }
+
+      .table-btn.warn {
+          border-color: #f0c8c8;
+          color: #9b2c2c;
+          background: #fff6f6;
+      }
+
+      footer {
+          margin-top: auto;
+          padding: 18px;
+          background: #f0e7d8;
+          color: var(--muted);
+          font-size: 12px;
+      }
+
+      .fade-up {
+          opacity: 0;
+          transform: translateY(14px);
+          animation: fadeUp 0.8s ease forwards;
+      }
+
+      .delay-1 {
+          animation-delay: 0.1s;
+      }
+
+      .delay-2 {
+          animation-delay: 0.25s;
+      }
+
+      .delay-3 {
+          animation-delay: 0.4s;
+      }
+
+      @keyframes fadeUp {
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+
+      @media (min-width: 768px) {
+          body {
+              display: flex;
+              justify-content: center;
+          }
+
+          .page {
+              width: min(100%, 940px);
+              border-left: 1px solid var(--line);
+              border-right: 1px solid var(--line);
+              background: #fffefb;
+          }
+
+          main {
+              padding: 28px 36px 40px;
+          }
+
+          header {
+              padding-inline: 36px;
+          }
+
+          .crud {
+              grid-template-columns: 1.1fr 1fr;
+              align-items: start;
+          }
+
+          .toolbar {
+              grid-template-columns: 2fr 1fr;
+          }
+
+          .toolbar-actions {
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+      }
+
+      @media (max-width: 900px) {
+          .crud {
+              grid-template-columns: 1fr;
+          }
+
+          .brand {
+              flex-direction: column;
+              align-items: flex-start;
+          }
+      }
+
+      @media (max-width: 720px) {
+          header {
+              padding: 18px 14px 0;
+          }
+
+          main {
+              padding: 18px 14px 28px;
+          }
+
+          .toolbar {
+              grid-template-columns: 1fr;
+          }
+
+          .toolbar-actions {
+              grid-template-columns: 1fr;
+          }
+
+          .form-row {
+              grid-template-columns: 1fr;
+          }
+
+          .totals {
+              grid-template-columns: 1fr;
+          }
+
+          .table-wrap {
+              border-radius: 10px;
+          }
+
+          table {
+              min-width: 560px;
+          }
+
+          .total-card {
+              padding: 12px 14px;
+          }
+
+          .total-card strong {
+              font-size: 16px;
+          }
+      }
+
+      @media (max-width: 520px) {
+          .brand-logo {
+              width: min(80vw, 280px);
+          }
+
+          .brand-title h1 {
+              font-size: 22px;
+          }
+
+          .brand-title p {
+              font-size: 12px;
+          }
+
+          .pill {
+              font-size: 11px;
+          }
+
+          .button {
+              padding: 10px 14px;
+              font-size: 13px;
+          }
+
+          input,
+          select,
+          textarea {
+              font-size: 13px;
+          }
+
+          .table-btn {
+              padding: 6px 6px;
+          }
+
+          table {
+              min-width: 520px;
+          }
+      }
+
+      @media print {
+
+          header,
+          .crud-form,
+          .toolbar-actions,
+          .report-meta,
+          footer {
+              display: none !important;
+          }
+
+          body {
+              background: #fff;
+          }
+
+          .page {
+              border: none;
+          }
+
+          table {
+              min-width: auto;
+          }
+      }

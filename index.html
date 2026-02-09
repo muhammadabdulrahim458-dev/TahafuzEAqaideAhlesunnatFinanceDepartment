@@ -1,0 +1,162 @@
+﻿<!doctype html>
+<html lang="ur" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ادارہ خزانہ - حسابات اور فنڈز</title>
+    <meta
+      name="description"
+      content="اسلامی تنظیم کے لیے حسابات و فنڈز کو منظم، محفوظ اور شفاف طریقے سے سنبھالنے کا پلیٹ فارم۔"
+    />
+  <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="brand">
+          <img
+            class="brand-logo fade-up"
+            src="finance logo.png"
+            alt="تحفظ عقائد اہلسنت کانفرنس"
+          />
+        </div>
+      </header>
+
+      <main>
+        <section class="card fade-up delay-1">
+          <div class="crud">
+            <form class="crud-form" id="record-form" aria-label="ریکارڈ فارم">
+              <div class="form-row">
+                <div class="field">
+                  <label for="record-type">قسم</label>
+                  <select id="record-type" name="record-type">
+                    <option>عطیہ</option>
+                    <option>اخراجات</option>
+                    <option>وعدہ</option>
+                    <option>فلاحی خرچ</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="record-amount">رقم</label>
+                  <input
+                    id="record-amount"
+                    name="record-amount"
+                    type="number"
+                    placeholder="₨ 0"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="field">
+                  <label for="record-name">نام / ادارہ</label>
+                  <input
+                    id="record-name"
+                    name="record-name"
+                    type="text"
+                    placeholder="مثلاً: مخیر حضرات"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="record-date">تاریخ</label>
+                  <input id="record-date" name="record-date" type="date" required />
+                </div>
+              </div>
+              <div class="field">
+                <label for="record-note">تفصیل</label>
+                <textarea id="record-note" name="record-note" placeholder="مختصر تفصیل درج کریں"></textarea>
+              </div>
+              <div class="cta-row">
+                <button class="button primary" id="save-btn" type="submit">Save Record</button>
+                <button class="button ghost" id="reset-btn" type="reset">Reset Form</button>
+              </div>
+            </form>
+
+            <div class="record-list">
+              <div class="toolbar">
+                <div class="search">
+                  <input
+                    id="search-input"
+                    type="text"
+                    placeholder="ریکارڈ تلاش کریں"
+                    aria-label="ریکارڈ تلاش کریں"
+                  />
+                </div>
+                <select id="filter-type" aria-label="فلٹر">
+                  <option value="all">تمام ریکارڈز</option>
+                  <option value="عطیہ">صرف عطیات</option>
+                  <option value="اخراجات">صرف اخراجات</option>
+                  <option value="وعدہ">وعدے</option>
+                  <option value="فلاحی خرچ">فلاحی خرچ</option>
+                </select>
+              </div>
+              <div class="toolbar-actions">
+                <button class="button secondary" id="export-csv" type="button">CSV ایکسپورٹ</button>
+                <button class="button secondary" id="export-excel" type="button">
+                  Excel ایکسپورٹ
+                </button>
+                <button class="button ghost" id="print-report" type="button">رپورٹ پرنٹ کریں</button>
+              </div>
+
+              <div class="report-meta">
+                <div class="field">
+                  <label for="report-author">رپورٹ تیار کنندہ</label>
+                  <input
+                    id="report-author"
+                    name="report-author"
+                    type="text"
+                    placeholder="مثلاً: محمد احمد"
+                    autocomplete="name"
+                  />
+                </div>
+              </div>
+
+              <div class="totals" aria-live="polite">
+                <div class="total-card">
+                  <span>کل آمدنی</span>
+                  <strong id="total-income">₨ 0</strong>
+                </div>
+                <div class="total-card">
+                  <span>کل اخراجات</span>
+                  <strong id="total-expense">₨ 0</strong>
+                </div>
+                <div class="total-card">
+                  <span>بیلنس</span>
+                  <strong id="total-balance">₨ 0</strong>
+                </div>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>قسم</th>
+                      <th>نام / ادارہ</th>
+                      <th>رقم</th>
+                      <th>تاریخ</th>
+                      <th>تفصیل</th>
+                      <th>کارروائی</th>
+                    </tr>
+                  </thead>
+                  <tbody id="records-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        نوٹ: ڈیٹا براؤزر کے لوکل اسٹوریج میں محفوظ ہوتا ہے۔ اگر براؤزر کا ڈیٹا صاف ہو تو ریکارڈ
+        ختم ہو سکتے ہیں۔
+        <br>
+       <i> Developed By : Muhammad Abdul Rahim Attari 
+        03338630447</i>
+      </footer>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
