@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ur" dir="rtl">
   <head>
     <meta charset="utf-8" />
@@ -8,7 +8,18 @@
       name="description"
       content="اسلامی تنظیم کے لیے حسابات و فنڈز کو منظم، محفوظ اور شفاف طریقے سے سنبھالنے کا پلیٹ فارم۔"
     />
-  <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="page">
@@ -19,132 +30,203 @@
             src="finance logo.png"
             alt="تحفظ عقائد اہلسنت کانفرنس"
           />
+          <!-- <div class="brand-title fade-up delay-1">
+            <h1>ادارہ خزانہ</h1>
+            <p>حسابات اور فنڈز کی شفاف مینجمنٹ</p>
+            <div class="brand-meta">
+              <span class="pill">
+                <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                <span>محفوظ ریکارڈ</span>
+              </span>
+              <span class="pill subtle">
+                <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                <span>فوری رپورٹ</span>
+              </span>
+            </div>
+          </div> -->
         </div>
       </header>
 
       <main>
         <section class="card fade-up delay-1">
           <div class="crud">
-            <form class="crud-form" id="record-form" aria-label="ریکارڈ فارم">
-              <div class="form-row">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="section-title">
+                    <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                    <span>ریکارڈ اندراج</span>
+                  </h2>
+                  <p class="section-subtitle">آمدنی، اخراجات یا وعدہ کی تفصیل شامل کریں۔</p>
+                </div>
+                <div class="panel-tip">
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                  <span>تمام فیلڈز مکمل کریں</span>
+                </div>
+              </div>
+              <form class="crud-form" id="record-form" aria-label="ریکارڈ فارم">
+                <div class="form-row">
+                  <div class="field">
+                    <label for="record-type">قسم</label>
+                    <select id="record-type" name="record-type">
+                      <option>عطیہ</option>
+                      <option>اخراجات</option>
+                      <option>وعدہ</option>
+                      <option>فلاحی خرچ</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="record-amount">رقم</label>
+                    <input
+                      id="record-amount"
+                      name="record-amount"
+                      type="number"
+                      placeholder="₨ 0"
+                      min="0"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="field">
+                    <label for="record-name">نام / ادارہ</label>
+                    <input
+                      id="record-name"
+                      name="record-name"
+                      type="text"
+                      placeholder="....کہاں خرچ ہوئے....."
+                      required
+                    />
+                  </div>
+                  <div class="field">
+                    <label for="record-date">تاریخ</label>
+                    <input id="record-date" name="record-date" type="date" required />
+                  </div>
+                </div>
                 <div class="field">
-                  <label for="record-type">قسم</label>
-                  <select id="record-type" name="record-type">
-                    <option>عطیہ</option>
-                    <option>اخراجات</option>
-                    <option>وعدہ</option>
-                    <option>فلاحی خرچ</option>
+                  <label for="record-note">تفصیل</label>
+                  <textarea
+                    id="record-note"
+                    name="record-note"
+                    placeholder="مختصر تفصیل درج کریں"
+                  ></textarea>
+                </div>
+                <div class="cta-row">
+                  <button class="button primary" id="save-btn" type="submit">
+                    <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+                    <span>Save Record</span>
+                  </button>
+                  <button class="button ghost" id="reset-btn" type="reset">
+                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                    <span>Reset Form</span>
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="section-title">
+                    <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+                    <span>ریکارڈ فہرست</span>
+                  </h2>
+                  <p class="section-subtitle">فلٹر، تلاش اور رپورٹ ایکسپورٹ</p>
+                </div>
+                <div class="panel-tip subtle">
+                  <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i>
+                  <span>CSV / Excel دستیاب</span>
+                </div>
+              </div>
+              <div class="record-list">
+                <div class="toolbar">
+                  <div class="search">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    <input
+                      id="search-input"
+                      type="text"
+                      placeholder="ریکارڈ تلاش کریں"
+                      aria-label="ریکارڈ تلاش کریں"
+                    />
+                  </div>
+                  <select id="filter-type" aria-label="فلٹر">
+                    <option value="all">تمام ریکارڈز</option>
+                    <option value="عطیہ">صرف عطیات</option>
+                    <option value="اخراجات">صرف اخراجات</option>
+                    <option value="وعدہ">وعدے</option>
+                    <option value="فلاحی خرچ">فلاحی خرچ</option>
                   </select>
                 </div>
-                <div class="field">
-                  <label for="record-amount">رقم</label>
-                  <input
-                    id="record-amount"
-                    name="record-amount"
-                    type="number"
-                    placeholder="₨ 0"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
+                <div class="toolbar-actions">
+                  <button class="button secondary" id="export-csv" type="button">
+                    <i class="fa-solid fa-file-csv" aria-hidden="true"></i>
+                    <span>CSV ایکسپورٹ</span>
+                  </button>
+                  <button class="button secondary" id="export-excel" type="button">
+                    <i class="fa-solid fa-file-excel" aria-hidden="true"></i>
+                    <span>Excel ایکسپورٹ</span>
+                  </button>
+                  <button class="button ghost" id="print-report" type="button">
+                    <i class="fa-solid fa-print" aria-hidden="true"></i>
+                    <span>رپورٹ پرنٹ کریں</span>
+                  </button>
                 </div>
-              </div>
-              <div class="form-row">
-                <div class="field">
-                  <label for="record-name">نام / ادارہ</label>
-                  <input
-                    id="record-name"
-                    name="record-name"
-                    type="text"
-                    placeholder="....کہاں خرچ ہوئے....."
-                    required
-                  />
-                </div>
-                <div class="field">
-                  <label for="record-date">تاریخ</label>
-                  <input id="record-date" name="record-date" type="date" required />
-                </div>
-              </div>
-              <div class="field">
-                <label for="record-note">تفصیل</label>
-                <textarea id="record-note" name="record-note" placeholder="مختصر تفصیل درج کریں"></textarea>
-              </div>
-              <div class="cta-row">
-                <button class="button primary" id="save-btn" type="submit">Save Record</button>
-                <button class="button ghost" id="reset-btn" type="reset">Reset Form</button>
-              </div>
-            </form>
 
-            <div class="record-list">
-              <div class="toolbar">
-                <div class="search">
-                  <input
-                    id="search-input"
-                    type="text"
-                    placeholder="ریکارڈ تلاش کریں"
-                    aria-label="ریکارڈ تلاش کریں"
-                  />
+                <div class="report-meta">
+                  <div class="field">
+                    <label for="report-author">رپورٹ تیار کنندہ</label>
+                    <input
+                      id="report-author"
+                      name="report-author"
+                      type="text"
+                      placeholder="مثلاً: محمد احمد"
+                      autocomplete="name"
+                    />
+                  </div>
                 </div>
-                <select id="filter-type" aria-label="فلٹر">
-                  <option value="all">تمام ریکارڈز</option>
-                  <option value="عطیہ">صرف عطیات</option>
-                  <option value="اخراجات">صرف اخراجات</option>
-                  <option value="وعدہ">وعدے</option>
-                  <option value="فلاحی خرچ">فلاحی خرچ</option>
-                </select>
-              </div>
-              <div class="toolbar-actions">
-                <button class="button secondary" id="export-csv" type="button">CSV ایکسپورٹ</button>
-                <button class="button secondary" id="export-excel" type="button">
-                  Excel ایکسپورٹ
-                </button>
-                <button class="button ghost" id="print-report" type="button">رپورٹ پرنٹ کریں</button>
-              </div>
 
-              <div class="report-meta">
-                <div class="field">
-                  <label for="report-author">رپورٹ تیار کنندہ</label>
-                  <input
-                    id="report-author"
-                    name="report-author"
-                    type="text"
-                    placeholder="مثلاً: محمد احمد"
-                    autocomplete="name"
-                  />
+                <div class="totals" aria-live="polite">
+                  <div class="total-card income">
+                    <div class="total-meta">
+                      <span>کل آمدنی</span>
+                      <i class="fa-solid fa-coins" aria-hidden="true"></i>
+                    </div>
+                    <strong id="total-income">₨ 0</strong>
+                  </div>
+                  <div class="total-card expense">
+                    <div class="total-meta">
+                      <span>کل اخراجات</span>
+                      <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+                    </div>
+                    <strong id="total-expense">₨ 0</strong>
+                  </div>
+                  <div class="total-card balance">
+                    <div class="total-meta">
+                      <span>بیلنس</span>
+                      <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+                    </div>
+                    <strong id="total-balance">₨ 0</strong>
+                  </div>
                 </div>
-              </div>
 
-              <div class="totals" aria-live="polite">
-                <div class="total-card">
-                  <span>کل آمدنی</span>
-                  <strong id="total-income">₨ 0</strong>
-                </div>
-                <div class="total-card">
-                  <span>کل اخراجات</span>
-                  <strong id="total-expense">₨ 0</strong>
-                </div>
-                <div class="total-card">
-                  <span>بیلنس</span>
-                  <strong id="total-balance">₨ 0</strong>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>قسم</th>
+                        <th>نام / ادارہ</th>
+                        <th>رقم</th>
+                        <th>تاریخ</th>
+                        <th>تفصیل</th>
+                        <th>کارروائی</th>
+                      </tr>
+                    </thead>
+                    <tbody id="records-body"></tbody>
+                  </table>
                 </div>
               </div>
-
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>قسم</th>
-                      <th>نام / ادارہ</th>
-                      <th>رقم</th>
-                      <th>تاریخ</th>
-                      <th>تفصیل</th>
-                      <th>کارروائی</th>
-                    </tr>
-                  </thead>
-                  <tbody id="records-body"></tbody>
-                </table>
-              </div>
-            </div>
+            </section>
           </div>
         </section>
       </main>
