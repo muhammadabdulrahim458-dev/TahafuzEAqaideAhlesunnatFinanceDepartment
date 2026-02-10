@@ -1,66 +1,68 @@
 
-      const STORAGE_KEY = "accounts_records_v1";
-      const REPORT_AUTHOR_KEY = "accounts_report_author_v1";
-      const form = document.getElementById("record-form");
-      const recordsBody = document.getElementById("records-body");
-      const filterType = document.getElementById("filter-type");
-      const searchInput = document.getElementById("search-input");
-      const resetBtn = document.getElementById("reset-btn");
-      const exportCsvBtn = document.getElementById("export-csv");
-      const exportExcelBtn = document.getElementById("export-excel");
-      const printBtn = document.getElementById("print-report");
-      const totalIncomeEl = document.getElementById("total-income");
-      const totalExpenseEl = document.getElementById("total-expense");
-      const totalBalanceEl = document.getElementById("total-balance");
-      const reportAuthorInput = document.getElementById("report-author");
-      const FONT_FAMILY = "Jameel Noori Nastaleeq";
-      const FONT_WOFF2_PATH = "fonts/Jameel%20Noori%20Nastaleeq.woff2";
-      const FONT_WOFF_PATH = "fonts/Jameel%20Noori%20Nastaleeq.woff";
+const STORAGE_KEY = "accounts_records_v1";
+const REPORT_AUTHOR_KEY = "accounts_report_author_v1";
+const form = document.getElementById("record-form");
+const recordsBody = document.getElementById("records-body");
+const filterType = document.getElementById("filter-type");
+const searchInput = document.getElementById("search-input");
+const resetBtn = document.getElementById("reset-btn");
+const exportCsvBtn = document.getElementById("export-csv");
+const exportExcelBtn = document.getElementById("export-excel");
+const printBtn = document.getElementById("print-report");
+const totalIncomeEl = document.getElementById("total-income");
+const totalExpenseEl = document.getElementById("total-expense");
+const totalBalanceEl = document.getElementById("total-balance");
+const saveBtn = document.getElementById("save-btn");
+const saveBtnLabel = saveBtn ? saveBtn.querySelector("span") : null;
+const reportAuthorInput = document.getElementById("report-author");
+const FONT_FAMILY = "Jameel Noori Nastaleeq";
+const FONT_WOFF2_PATH = "fonts/Jameel%20Noori%20Nastaleeq.woff2";
+const FONT_WOFF_PATH = "fonts/Jameel%20Noori%20Nastaleeq.woff";
 
-      let editId = null;
-      const incomeTypes = new Set(["عطیہ", "وعدہ"]);
-      const expenseTypes = new Set(["اخراجات", "فلاحی خرچ"]);
+let editId = null;
+const incomeTypes = new Set(["عطیہ", "وعدہ"]);
+const expenseTypes = new Set(["اخراجات", "فلاحی خرچ"]);
 
-      const getRecords = () => {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : [];
-      };
+const getRecords = () => {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  return raw ? JSON.parse(raw) : [];
+};
 
-      const saveRecords = (records) => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-      };
+const saveRecords = (records) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+};
 
-      const formatAmount = (value) => {
-        const number = Number(value || 0);
-        return `₨ ${number.toLocaleString("ur-PK", { maximumFractionDigits: 2 })}`;
-      };
+const formatAmount = (value) => {
+  const number = Number(value || 0);
+  return `₨ ${number.toLocaleString("ur-PK", { maximumFractionDigits: 2 })}`;
+};
 
-      const formatDateTime = (date = new Date()) =>
-        new Intl.DateTimeFormat("ur-PK", { dateStyle: "full", timeStyle: "short" }).format(date);
+const formatDateTime = (date = new Date()) =>
+  new Intl.DateTimeFormat("ur-PK", { dateStyle: "full", timeStyle: "short" }).format(date);
 
-      const escapeHtml = (value) =>
-        String(value ?? "")
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#39;");
+const escapeHtml = (value) =>
+  String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
-      const sanitizeCell = (value) => String(value ?? "").replace(/\r?\n/g, " ").trim();
+const sanitizeCell = (value) => String(value ?? "").replace(/\r?\n/g, " ").trim();
 
-      const formatNoteHtml = (value) => {
-        if (!value) return "-";
-        return escapeHtml(value).replace(/\r?\n/g, "<br />");
-      };
+const formatNoteHtml = (value) => {
+  if (!value) return "-";
+  return escapeHtml(value).replace(/\r?\n/g, "<br />");
+};
 
-      const getFileStamp = (date = new Date()) => {
-        const pad = (value) => String(value).padStart(2, "0");
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-      };
+const getFileStamp = (date = new Date()) => {
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
 
-      const resolveAssetUrl = (path) => new URL(path, window.location.href).href;
+const resolveAssetUrl = (path) => new URL(path, window.location.href).href;
 
-      const getFontFaceCss = () => `
+const getFontFaceCss = () => `
       @font-face {
         font-family: "${FONT_FAMILY}";
         src: url("${resolveAssetUrl(FONT_WOFF2_PATH)}") format("woff2"),
@@ -71,63 +73,73 @@
       }
       `;
 
-      const calculateTotals = (records) => {
-        const income = records
-          .filter((record) => incomeTypes.has(record.type))
-          .reduce((sum, record) => sum + Number(record.amount || 0), 0);
-        const expense = records
-          .filter((record) => expenseTypes.has(record.type))
-          .reduce((sum, record) => sum + Number(record.amount || 0), 0);
+const setSaveLabel = (text) => {
+  if (saveBtnLabel) {
+    saveBtnLabel.textContent = text;
+    return;
+  }
+  if (saveBtn) {
+    saveBtn.textContent = text;
+  }
+};
 
-        return { income, expense, balance: income - expense };
-      };
+const calculateTotals = (records) => {
+  const income = records
+    .filter((record) => incomeTypes.has(record.type))
+    .reduce((sum, record) => sum + Number(record.amount || 0), 0);
+  const expense = records
+    .filter((record) => expenseTypes.has(record.type))
+    .reduce((sum, record) => sum + Number(record.amount || 0), 0);
 
-      const clearForm = () => {
-        form.reset();
-        editId = null;
-        document.getElementById("save-btn").textContent = "Save Records";
-      };
+  return { income, expense, balance: income - expense };
+};
 
-      const getFilteredRecords = () => {
-        const records = getRecords();
-        const typeFilter = filterType.value;
-        const query = searchInput.value.trim().toLowerCase();
-        return records.filter((record) => {
-          const matchesType = typeFilter === "all" || record.type === typeFilter;
-          const matchesQuery =
-            !query ||
-            (record.name || "").toLowerCase().includes(query) ||
-            (record.note || "").toLowerCase().includes(query) ||
-            (record.type || "").toLowerCase().includes(query);
-          return matchesType && matchesQuery;
-        });
-      };
+const clearForm = () => {
+  form.reset();
+  editId = null;
+  setSaveLabel("Save Record");
+};
 
-      const renderTotals = (records) => {
-        const { income, expense, balance } = calculateTotals(records);
+const getFilteredRecords = () => {
+  const records = getRecords();
+  const typeFilter = filterType.value;
+  const query = searchInput.value.trim().toLowerCase();
+  return records.filter((record) => {
+    const matchesType = typeFilter === "all" || record.type === typeFilter;
+    const matchesQuery =
+      !query ||
+      (record.name || "").toLowerCase().includes(query) ||
+      (record.note || "").toLowerCase().includes(query) ||
+      (record.type || "").toLowerCase().includes(query);
+    return matchesType && matchesQuery;
+  });
+};
 
-        totalIncomeEl.textContent = formatAmount(income);
-        totalExpenseEl.textContent = formatAmount(expense);
-        totalBalanceEl.textContent = formatAmount(balance);
-      };
+const renderTotals = (records) => {
+  const { income, expense, balance } = calculateTotals(records);
 
-      const renderTable = () => {
-        const filtered = getFilteredRecords();
-        recordsBody.innerHTML = "";
-        renderTotals(filtered);
+  totalIncomeEl.textContent = formatAmount(income);
+  totalExpenseEl.textContent = formatAmount(expense);
+  totalBalanceEl.textContent = formatAmount(balance);
+};
 
-        if (!filtered.length) {
-          recordsBody.innerHTML = `
+const renderTable = () => {
+  const filtered = getFilteredRecords();
+  recordsBody.innerHTML = "";
+  renderTotals(filtered);
+
+  if (!filtered.length) {
+    recordsBody.innerHTML = `
             <tr>
               <td colspan="6">ابھی کوئی ریکارڈ موجود نہیں۔</td>
             </tr>
           `;
-          return;
-        }
+    return;
+  }
 
-        filtered.forEach((record) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
+  filtered.forEach((record) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
             <td>${record.type}</td>
             <td>${record.name}</td>
             <td>${formatAmount(record.amount)}</td>
@@ -135,73 +147,77 @@
             <td>${record.note || "-"}</td>
             <td>
               <div class="row-actions">
-                <button class="table-btn" data-action="edit" data-id="${record.id}">Edit</button>
+                <button class="table-btn" data-action="edit" data-id="${record.id}">
+                  <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                  <span>Edit</span>
+                </button>
                 <button class="table-btn warn" data-action="delete" data-id="${record.id}">
-                  Delete
+                  <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                  <span>Delete</span>
                 </button>
               </div>
             </td>
           `;
-          recordsBody.appendChild(row);
-        });
-      };
+    recordsBody.appendChild(row);
+  });
+};
 
-      const upsertRecord = (record) => {
-        const records = getRecords();
-        const index = records.findIndex((item) => item.id === record.id);
-        if (index >= 0) {
-          records[index] = record;
-        } else {
-          records.unshift(record);
-        }
-        saveRecords(records);
-        renderTable();
-      };
+const upsertRecord = (record) => {
+  const records = getRecords();
+  const index = records.findIndex((item) => item.id === record.id);
+  if (index >= 0) {
+    records[index] = record;
+  } else {
+    records.unshift(record);
+  }
+  saveRecords(records);
+  renderTable();
+};
 
-      const deleteRecord = (id) => {
-        const records = getRecords().filter((record) => record.id !== id);
-        saveRecords(records);
-        renderTable();
-      };
+const deleteRecord = (id) => {
+  const records = getRecords().filter((record) => record.id !== id);
+  saveRecords(records);
+  renderTable();
+};
 
-      const getOrgInfo = () => {
-        const titleEl = document.querySelector(".brand-title h1");
-        const subtitleEl = document.querySelector(".brand-title p");
-        const logoEl = document.querySelector(".brand-logo");
-        return {
-          title:
-            titleEl?.textContent?.trim() ||
-            logoEl?.getAttribute("alt")?.trim() ||
-            "ادارہ خزانہ",
-          subtitle: subtitleEl?.textContent?.trim() || "",
-        };
-      };
+const getOrgInfo = () => {
+  const titleEl = document.querySelector(".brand-title h1");
+  const subtitleEl = document.querySelector(".brand-title p");
+  const logoEl = document.querySelector(".brand-logo");
+  return {
+    title:
+      titleEl?.textContent?.trim() ||
+      logoEl?.getAttribute("alt")?.trim() ||
+      "ادارہ خزانہ",
+    subtitle: subtitleEl?.textContent?.trim() || "",
+  };
+};
 
-      const getReportMeta = () => {
-        const org = getOrgInfo();
-        const author = reportAuthorInput?.value.trim() || "";
-        const filterLabel =
-          filterType.options[filterType.selectedIndex]?.textContent?.trim() || "تمام ریکارڈز";
-        const searchQuery = searchInput.value.trim();
-        return {
-          ...org,
-          author: author || "درج نہیں",
-          filterLabel,
-          searchQuery: searchQuery || "—",
-          generatedAt: formatDateTime(),
-        };
-      };
+const getReportMeta = () => {
+  const org = getOrgInfo();
+  const author = reportAuthorInput?.value.trim() || "";
+  const filterLabel =
+    filterType.options[filterType.selectedIndex]?.textContent?.trim() || "تمام ریکارڈز";
+  const searchQuery = searchInput.value.trim();
+  return {
+    ...org,
+    author: author || "درج نہیں",
+    filterLabel,
+    searchQuery: searchQuery || "—",
+    generatedAt: formatDateTime(),
+  };
+};
 
-      const buildReportHtml = (records, { mode = "print" } = {}) => {
-        const meta = getReportMeta();
-        const totals = calculateTotals(records);
-        const amountLabel = (value) =>
-          mode === "excel" ? Number(value || 0) : formatAmount(value);
+const buildReportHtml = (records, { mode = "print" } = {}) => {
+  const meta = getReportMeta();
+  const totals = calculateTotals(records);
+  const amountLabel = (value) =>
+    mode === "excel" ? Number(value || 0) : formatAmount(value);
 
-        const rowsHtml = records.length
-          ? records
-              .map(
-                (record) => `
+  const rowsHtml = records.length
+    ? records
+      .map(
+        (record) => `
             <tr>
               <td data-label="قسم">${escapeHtml(record.type || "-")}</td>
               <td data-label="نام / ادارہ">${escapeHtml(record.name || "-")}</td>
@@ -210,15 +226,15 @@
               <td data-label="تفصیل">${formatNoteHtml(record.note)}</td>
             </tr>
           `,
-              )
-              .join("")
-          : `
+      )
+      .join("")
+    : `
             <tr class="empty-row">
               <td colspan="5">ابھی کوئی ریکارڈ موجود نہیں۔</td>
             </tr>
           `;
 
-        return `<!doctype html>
+  return `<!doctype html>
 <html lang="ur" dir="rtl">
   <head>
     <meta charset="utf-8" />
@@ -527,238 +543,240 @@
       </table>
 
       <div class="note">یہ رپورٹ خودکار نظام کے ذریعے تیار کی گئی ہے۔</div>
+<div class="note"><i>This report has been generated by computer</i></div>
+
     </div>
   </body>
 </html>`;
-      };
+};
 
-      const downloadBlob = (blob, filename) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        link.click();
-        URL.revokeObjectURL(url);
-      };
+const downloadBlob = (blob, filename) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+};
 
-      const exportCsv = () => {
-        const records = getFilteredRecords();
-        if (!records.length) {
-          alert("ایکسپورٹ کے لیے کوئی ریکارڈ موجود نہیں۔");
-          return;
-        }
+const exportCsv = () => {
+  const records = getFilteredRecords();
+  if (!records.length) {
+    alert("ایکسپورٹ کے لیے کوئی ریکارڈ موجود نہیں۔");
+    return;
+  }
 
-        const headers = ["قسم", "نام / ادارہ", "رقم", "تاریخ", "تفصیل"];
-        const rows = records.map((record) => [
-          record.type,
-          record.name,
-          record.amount,
-          record.date,
-          record.note || "",
-        ]);
+  const headers = ["قسم", "نام / ادارہ", "رقم", "تاریخ", "تفصیل"];
+  const rows = records.map((record) => [
+    record.type,
+    record.name,
+    record.amount,
+    record.date,
+    record.note || "",
+  ]);
 
-        const csv = [headers, ...rows]
-          .map((row) =>
-            row
-              .map((cell) => `"${sanitizeCell(cell).replace(/"/g, '""')}"`)
-              .join(","),
-          )
-          .join("\n");
+  const csv = [headers, ...rows]
+    .map((row) =>
+      row
+        .map((cell) => `"${sanitizeCell(cell).replace(/"/g, '""')}"`)
+        .join(","),
+    )
+    .join("\n");
 
-        const stampedName = `records-${getFileStamp()}.csv`;
-        const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
-        downloadBlob(blob, stampedName);
-      };
+  const stampedName = `records-${getFileStamp()}.csv`;
+  const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+  downloadBlob(blob, stampedName);
+};
 
-      const exportExcel = () => {
-        const records = getFilteredRecords();
-        if (!records.length) {
-          alert("ایکسپورٹ کے لیے کوئی ریکارڈ موجود نہیں۔");
-          return;
-        }
+const exportExcel = () => {
+  const records = getFilteredRecords();
+  if (!records.length) {
+    alert("ایکسپورٹ کے لیے کوئی ریکارڈ موجود نہیں۔");
+    return;
+  }
 
-        const html = buildReportHtml(records, { mode: "excel" });
-        const stampedName = `records-${getFileStamp()}.xls`;
-        const blob = new Blob([`\uFEFF${html}`], {
-          type: "application/vnd.ms-excel;charset=utf-8;",
+  const html = buildReportHtml(records, { mode: "excel" });
+  const stampedName = `records-${getFileStamp()}.xls`;
+  const blob = new Blob([`\uFEFF${html}`], {
+    type: "application/vnd.ms-excel;charset=utf-8;",
+  });
+  downloadBlob(blob, stampedName);
+};
+
+const printReport = () => {
+  const records = getFilteredRecords();
+  if (!records.length) {
+    alert("پرنٹ کے لیے کوئی ریکارڈ موجود نہیں۔");
+    return;
+  }
+
+  const html = buildReportHtml(records, { mode: "print" });
+  const isMobilePrint = () =>
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+
+  const runPrintFlow = (targetWindow, cleanup) => {
+    const targetDoc = targetWindow.document;
+    targetDoc.open();
+    targetDoc.write(html);
+    targetDoc.close();
+
+    let printed = false;
+    const safeCleanup = () => {
+      if (cleanup) cleanup();
+    };
+
+    const triggerPrint = () => {
+      if (printed) return;
+      printed = true;
+      targetWindow.focus();
+      targetWindow.print();
+      targetWindow.onafterprint = safeCleanup;
+      setTimeout(safeCleanup, 1500);
+    };
+
+    const waitForFonts = () => {
+      const afterLayout = () => {
+        targetWindow.requestAnimationFrame(() => {
+          targetWindow.requestAnimationFrame(triggerPrint);
         });
-        downloadBlob(blob, stampedName);
       };
-
-      const printReport = () => {
-        const records = getFilteredRecords();
-        if (!records.length) {
-          alert("پرنٹ کے لیے کوئی ریکارڈ موجود نہیں۔");
-          return;
-        }
-
-        const html = buildReportHtml(records, { mode: "print" });
-        const isMobilePrint = () =>
-          /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-
-        const runPrintFlow = (targetWindow, cleanup) => {
-          const targetDoc = targetWindow.document;
-          targetDoc.open();
-          targetDoc.write(html);
-          targetDoc.close();
-
-          let printed = false;
-          const safeCleanup = () => {
-            if (cleanup) cleanup();
-          };
-
-          const triggerPrint = () => {
-            if (printed) return;
-            printed = true;
-            targetWindow.focus();
-            targetWindow.print();
-            targetWindow.onafterprint = safeCleanup;
-            setTimeout(safeCleanup, 1500);
-          };
-
-          const waitForFonts = () => {
-            const afterLayout = () => {
-              targetWindow.requestAnimationFrame(() => {
-                targetWindow.requestAnimationFrame(triggerPrint);
-              });
-            };
-            if (targetDoc.fonts && targetDoc.fonts.ready) {
-              targetDoc.fonts.load(`1em "${FONT_FAMILY}"`).catch(() => {});
-              targetDoc.fonts.ready
-                .then(() => setTimeout(afterLayout, 50))
-                .catch(() => afterLayout());
-              return;
-            }
-            setTimeout(afterLayout, 100);
-          };
-
-          targetWindow.addEventListener(
-            "load",
-            () => {
-              setTimeout(waitForFonts, 100);
-            },
-            { once: true },
-          );
-
-          setTimeout(() => {
-            if (targetDoc.readyState === "complete") {
-              waitForFonts();
-            }
-          }, 350);
-        };
-
-        const runIframePrint = () => {
-          const printFrame = document.createElement("iframe");
-          printFrame.setAttribute("title", "Print Report");
-          printFrame.style.position = "fixed";
-          printFrame.style.left = "-9999px";
-          printFrame.style.top = "0";
-          printFrame.style.width = "1px";
-          printFrame.style.height = "1px";
-          printFrame.style.opacity = "0";
-          printFrame.style.pointerEvents = "none";
-          printFrame.style.border = "0";
-          document.body.appendChild(printFrame);
-
-          const frameWindow = printFrame.contentWindow;
-          if (!frameWindow) {
-            printFrame.remove();
-            alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
-            return;
-          }
-
-          runPrintFlow(frameWindow, () => {
-            printFrame.remove();
-          });
-        };
-
-        if (isMobilePrint()) {
-          let printWindow = null;
-          try {
-            printWindow = window.open("", "_blank");
-          } catch (error) {
-            printWindow = null;
-          }
-          if (!printWindow) {
-            alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
-            return;
-          }
-          try {
-            runPrintFlow(printWindow);
-          } catch (error) {
-            try {
-              printWindow.close();
-            } catch (closeError) {
-              /* ignore */
-            }
-            runIframePrint();
-          }
-          return;
-        }
-
-        runIframePrint();
-      };
-
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const record = {
-          id: editId || crypto.randomUUID(),
-          type: document.getElementById("record-type").value,
-          amount: document.getElementById("record-amount").value,
-          name: document.getElementById("record-name").value.trim(),
-          date: document.getElementById("record-date").value,
-          note: document.getElementById("record-note").value.trim(),
-        };
-
-        upsertRecord(record);
-        clearForm();
-      });
-
-      recordsBody.addEventListener("click", (event) => {
-        const button = event.target.closest("button");
-        if (!button) return;
-        const id = button.dataset.id;
-        const action = button.dataset.action;
-        const records = getRecords();
-        const record = records.find((item) => item.id === id);
-
-        if (!record) return;
-
-        if (action === "edit") {
-          editId = record.id;
-          document.getElementById("record-type").value = record.type;
-          document.getElementById("record-amount").value = record.amount;
-          document.getElementById("record-name").value = record.name;
-          document.getElementById("record-date").value = record.date;
-          document.getElementById("record-note").value = record.note;
-          document.getElementById("save-btn").textContent = "اپ ڈیٹ کریں";
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-
-        if (action === "delete") {
-          const confirmed = confirm("کیا آپ واقعی یہ ریکارڈ ڈیلیٹ کرنا چاہتے ہیں؟");
-          if (confirmed) {
-            deleteRecord(record.id);
-          }
-        }
-      });
-
-      filterType.addEventListener("change", renderTable);
-      searchInput.addEventListener("input", renderTable);
-      resetBtn.addEventListener("click", clearForm);
-
-      if (reportAuthorInput) {
-        const savedAuthor = localStorage.getItem(REPORT_AUTHOR_KEY);
-        if (savedAuthor) {
-          reportAuthorInput.value = savedAuthor;
-        }
-        reportAuthorInput.addEventListener("input", () => {
-          localStorage.setItem(REPORT_AUTHOR_KEY, reportAuthorInput.value.trim());
-        });
+      if (targetDoc.fonts && targetDoc.fonts.ready) {
+        targetDoc.fonts.load(`1em "${FONT_FAMILY}"`).catch(() => { });
+        targetDoc.fonts.ready
+          .then(() => setTimeout(afterLayout, 50))
+          .catch(() => afterLayout());
+        return;
       }
+      setTimeout(afterLayout, 100);
+    };
 
-      if (exportCsvBtn) exportCsvBtn.addEventListener("click", exportCsv);
-      if (exportExcelBtn) exportExcelBtn.addEventListener("click", exportExcel);
-      if (printBtn) printBtn.addEventListener("click", printReport);
+    targetWindow.addEventListener(
+      "load",
+      () => {
+        setTimeout(waitForFonts, 100);
+      },
+      { once: true },
+    );
 
-      renderTable();
+    setTimeout(() => {
+      if (targetDoc.readyState === "complete") {
+        waitForFonts();
+      }
+    }, 350);
+  };
+
+  const runIframePrint = () => {
+    const printFrame = document.createElement("iframe");
+    printFrame.setAttribute("title", "Print Report");
+    printFrame.style.position = "fixed";
+    printFrame.style.left = "-9999px";
+    printFrame.style.top = "0";
+    printFrame.style.width = "1px";
+    printFrame.style.height = "1px";
+    printFrame.style.opacity = "0";
+    printFrame.style.pointerEvents = "none";
+    printFrame.style.border = "0";
+    document.body.appendChild(printFrame);
+
+    const frameWindow = printFrame.contentWindow;
+    if (!frameWindow) {
+      printFrame.remove();
+      alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
+      return;
+    }
+
+    runPrintFlow(frameWindow, () => {
+      printFrame.remove();
+    });
+  };
+
+  if (isMobilePrint()) {
+    let printWindow = null;
+    try {
+      printWindow = window.open("", "_blank");
+    } catch (error) {
+      printWindow = null;
+    }
+    if (!printWindow) {
+      alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
+      return;
+    }
+    try {
+      runPrintFlow(printWindow);
+    } catch (error) {
+      try {
+        printWindow.close();
+      } catch (closeError) {
+        /* ignore */
+      }
+      runIframePrint();
+    }
+    return;
+  }
+
+  runIframePrint();
+};
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const record = {
+    id: editId || crypto.randomUUID(),
+    type: document.getElementById("record-type").value,
+    amount: document.getElementById("record-amount").value,
+    name: document.getElementById("record-name").value.trim(),
+    date: document.getElementById("record-date").value,
+    note: document.getElementById("record-note").value.trim(),
+  };
+
+  upsertRecord(record);
+  clearForm();
+});
+
+recordsBody.addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button) return;
+  const id = button.dataset.id;
+  const action = button.dataset.action;
+  const records = getRecords();
+  const record = records.find((item) => item.id === id);
+
+  if (!record) return;
+
+  if (action === "edit") {
+    editId = record.id;
+    document.getElementById("record-type").value = record.type;
+    document.getElementById("record-amount").value = record.amount;
+    document.getElementById("record-name").value = record.name;
+    document.getElementById("record-date").value = record.date;
+    document.getElementById("record-note").value = record.note;
+    setSaveLabel("Update Record");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  if (action === "delete") {
+    const confirmed = confirm("کیا آپ واقعی یہ ریکارڈ ڈیلیٹ کرنا چاہتے ہیں؟");
+    if (confirmed) {
+      deleteRecord(record.id);
+    }
+  }
+});
+
+filterType.addEventListener("change", renderTable);
+searchInput.addEventListener("input", renderTable);
+resetBtn.addEventListener("click", clearForm);
+
+if (reportAuthorInput) {
+  const savedAuthor = localStorage.getItem(REPORT_AUTHOR_KEY);
+  if (savedAuthor) {
+    reportAuthorInput.value = savedAuthor;
+  }
+  reportAuthorInput.addEventListener("input", () => {
+    localStorage.setItem(REPORT_AUTHOR_KEY, reportAuthorInput.value.trim());
+  });
+}
+
+if (exportCsvBtn) exportCsvBtn.addEventListener("click", exportCsv);
+if (exportExcelBtn) exportExcelBtn.addEventListener("click", exportExcel);
+if (printBtn) printBtn.addEventListener("click", printReport);
+
+renderTable();
