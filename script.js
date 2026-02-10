@@ -593,6 +593,76 @@
         }
 
         const html = buildReportHtml(records, { mode: "print" });
+        const isMobilePrint = () =>
+          /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+
+        const runPrintFlow = (targetWindow, cleanup) => {
+          const targetDoc = targetWindow.document;
+          targetDoc.open();
+          targetDoc.write(html);
+          targetDoc.close();
+
+          let printed = false;
+          const safeCleanup = () => {
+            if (cleanup) cleanup();
+          };
+
+          const triggerPrint = () => {
+            if (printed) return;
+            printed = true;
+            targetWindow.focus();
+            targetWindow.print();
+            targetWindow.onafterprint = safeCleanup;
+            setTimeout(safeCleanup, 1500);
+          };
+
+          const waitForFonts = () => {
+            const afterLayout = () => {
+              targetWindow.requestAnimationFrame(() => {
+                targetWindow.requestAnimationFrame(triggerPrint);
+              });
+            };
+            if (targetDoc.fonts && targetDoc.fonts.ready) {
+              targetDoc.fonts.load(`1em "${FONT_FAMILY}"`).catch(() => {});
+              targetDoc.fonts.ready
+                .then(() => setTimeout(afterLayout, 50))
+                .catch(() => afterLayout());
+              return;
+            }
+            setTimeout(afterLayout, 100);
+          };
+
+          targetWindow.addEventListener(
+            "load",
+            () => {
+              setTimeout(waitForFonts, 100);
+            },
+            { once: true },
+          );
+
+          setTimeout(() => {
+            if (targetDoc.readyState === "complete") {
+              waitForFonts();
+            }
+          }, 350);
+        };
+
+        if (isMobilePrint()) {
+          const printWindow = window.open("", "_blank", "noopener,noreferrer");
+          if (!printWindow) {
+            alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
+            return;
+          }
+          runPrintFlow(printWindow, () => {
+            try {
+              printWindow.close();
+            } catch (error) {
+              /* ignore */
+            }
+          });
+          return;
+        }
+
         const printFrame = document.createElement("iframe");
         printFrame.setAttribute("title", "Print Report");
         printFrame.style.position = "fixed";
@@ -612,50 +682,9 @@
           return;
         }
 
-        let printed = false;
-        const cleanup = () => {
+        runPrintFlow(frameWindow, () => {
           printFrame.remove();
-        };
-
-        const triggerPrint = () => {
-          if (printed) return;
-          printed = true;
-          frameWindow.focus();
-          frameWindow.print();
-          frameWindow.onafterprint = cleanup;
-          setTimeout(cleanup, 1500);
-        };
-
-        const frameDoc = frameWindow.document;
-        frameDoc.open();
-        frameDoc.write(html);
-        frameDoc.close();
-
-        const waitForFonts = () => {
-          const afterLayout = () => {
-            frameWindow.requestAnimationFrame(() => {
-              frameWindow.requestAnimationFrame(triggerPrint);
-            });
-          };
-          if (frameDoc.fonts && frameDoc.fonts.ready) {
-            frameDoc.fonts.load(`1em "${FONT_FAMILY}"`).catch(() => {});
-            frameDoc.fonts.ready
-              .then(() => setTimeout(afterLayout, 50))
-              .catch(() => afterLayout());
-            return;
-          }
-          setTimeout(afterLayout, 100);
-        };
-
-        printFrame.onload = () => {
-          setTimeout(waitForFonts, 100);
-        };
-
-        setTimeout(() => {
-          if (frameDoc.readyState === "complete") {
-            waitForFonts();
-          }
-        }, 350);
+        });
       };
 
       form.addEventListener("submit", (event) => {
