@@ -345,7 +345,7 @@
         border-top: 1px dashed #e6ddcf;
         padding-top: 10px;
       }
-      @media (max-width: 720px) {
+      @media screen and (max-width: 720px) {
         .report {
           padding: 16px 14px;
         }
@@ -405,34 +405,98 @@
         margin: 14mm 12mm;
       }
       @media print {
+        html,
         body {
           margin: 0;
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+        }
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
         }
         .report {
           padding: 0;
+        }
+        .report-header,
+        .report-meta,
+        .summary {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+        .report-header {
+          break-after: avoid;
+          page-break-after: avoid;
+        }
+        .report-header {
+          flex-direction: row;
+          align-items: flex-start;
+        }
+        .report-meta {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .summary {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        table {
+          display: table;
+        }
+        thead {
+          display: table-header-group;
+        }
+        tbody {
+          display: table-row-group;
+        }
+        tr {
+          display: table-row;
+        }
+        th,
+        td {
+          display: table-cell;
+        }
+        td::before {
+          content: none !important;
+        }
+        tbody tr {
+          border: none;
+          border-radius: 0;
+          padding: 0;
+          margin: 0;
+          background: transparent;
+        }
+        td {
+          border: 1px solid #e6ddcf;
+          padding: 9px 10px;
+        }
+        .amount {
+          white-space: nowrap;
+        }
+        .empty-row td {
+          text-align: right;
+          padding: 9px 10px;
         }
       }
     </style>
   </head>
   <body>
     <div class="report">
-      <header class="report-header">
+      <div class="report-header">
         <div class="report-title">
           <h1>${escapeHtml(meta.title)}</h1>
           ${meta.subtitle ? `<p>${escapeHtml(meta.subtitle)}</p>` : ""}
         </div>
         <div class="report-badge">مالی رپورٹ</div>
-      </header>
+      </div>
 
-      <section class="report-meta">
+      <div class="report-meta">
         <div><span>تیار کردہ:</span><strong>${escapeHtml(meta.author)}</strong></div>
         <div><span>رپورٹ کا وقت:</span><strong>${escapeHtml(meta.generatedAt)}</strong></div>
         <div><span>فلٹر:</span><strong>${escapeHtml(meta.filterLabel)}</strong></div>
         <div><span>تلاش:</span><strong>${escapeHtml(meta.searchQuery)}</strong></div>
         <div><span>ریکارڈز:</span><strong>${records.length}</strong></div>
-      </section>
+      </div>
 
-      <section class="summary">
+      <div class="summary">
         <div class="summary-card">
           <span>کل آمدنی</span>
           <strong>${formatAmount(totals.income)}</strong>
@@ -445,7 +509,7 @@
           <span>بیلنس</span>
           <strong>${formatAmount(totals.balance)}</strong>
         </div>
-      </section>
+      </div>
 
       <table>
         <thead>
@@ -532,10 +596,12 @@
         const printFrame = document.createElement("iframe");
         printFrame.setAttribute("title", "Print Report");
         printFrame.style.position = "fixed";
-        printFrame.style.right = "0";
-        printFrame.style.bottom = "0";
-        printFrame.style.width = "0";
-        printFrame.style.height = "0";
+        printFrame.style.left = "-9999px";
+        printFrame.style.top = "0";
+        printFrame.style.width = "1px";
+        printFrame.style.height = "1px";
+        printFrame.style.opacity = "0";
+        printFrame.style.pointerEvents = "none";
         printFrame.style.border = "0";
         document.body.appendChild(printFrame);
 
@@ -565,13 +631,29 @@
         frameDoc.write(html);
         frameDoc.close();
 
+        const waitForFonts = () => {
+          const afterLayout = () => {
+            frameWindow.requestAnimationFrame(() => {
+              frameWindow.requestAnimationFrame(triggerPrint);
+            });
+          };
+          if (frameDoc.fonts && frameDoc.fonts.ready) {
+            frameDoc.fonts.load(`1em "${FONT_FAMILY}"`).catch(() => {});
+            frameDoc.fonts.ready
+              .then(() => setTimeout(afterLayout, 50))
+              .catch(() => afterLayout());
+            return;
+          }
+          setTimeout(afterLayout, 100);
+        };
+
         printFrame.onload = () => {
-          setTimeout(triggerPrint, 100);
+          setTimeout(waitForFonts, 100);
         };
 
         setTimeout(() => {
           if (frameDoc.readyState === "complete") {
-            triggerPrint();
+            waitForFonts();
           }
         }, 350);
       };
