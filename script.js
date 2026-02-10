@@ -647,44 +647,56 @@
           }, 350);
         };
 
+        const runIframePrint = () => {
+          const printFrame = document.createElement("iframe");
+          printFrame.setAttribute("title", "Print Report");
+          printFrame.style.position = "fixed";
+          printFrame.style.left = "-9999px";
+          printFrame.style.top = "0";
+          printFrame.style.width = "1px";
+          printFrame.style.height = "1px";
+          printFrame.style.opacity = "0";
+          printFrame.style.pointerEvents = "none";
+          printFrame.style.border = "0";
+          document.body.appendChild(printFrame);
+
+          const frameWindow = printFrame.contentWindow;
+          if (!frameWindow) {
+            printFrame.remove();
+            alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
+            return;
+          }
+
+          runPrintFlow(frameWindow, () => {
+            printFrame.remove();
+          });
+        };
+
         if (isMobilePrint()) {
-          const printWindow = window.open("", "_blank", "noopener,noreferrer");
+          let printWindow = null;
+          try {
+            printWindow = window.open("", "_blank");
+          } catch (error) {
+            printWindow = null;
+          }
           if (!printWindow) {
             alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
             return;
           }
-          runPrintFlow(printWindow, () => {
+          try {
+            runPrintFlow(printWindow);
+          } catch (error) {
             try {
               printWindow.close();
-            } catch (error) {
+            } catch (closeError) {
               /* ignore */
             }
-          });
+            runIframePrint();
+          }
           return;
         }
 
-        const printFrame = document.createElement("iframe");
-        printFrame.setAttribute("title", "Print Report");
-        printFrame.style.position = "fixed";
-        printFrame.style.left = "-9999px";
-        printFrame.style.top = "0";
-        printFrame.style.width = "1px";
-        printFrame.style.height = "1px";
-        printFrame.style.opacity = "0";
-        printFrame.style.pointerEvents = "none";
-        printFrame.style.border = "0";
-        document.body.appendChild(printFrame);
-
-        const frameWindow = printFrame.contentWindow;
-        if (!frameWindow) {
-          printFrame.remove();
-          alert("براہِ کرم پاپ اپ کی اجازت دیں تاکہ رپورٹ پرنٹ ہو سکے۔");
-          return;
-        }
-
-        runPrintFlow(frameWindow, () => {
-          printFrame.remove();
-        });
+        runIframePrint();
       };
 
       form.addEventListener("submit", (event) => {
