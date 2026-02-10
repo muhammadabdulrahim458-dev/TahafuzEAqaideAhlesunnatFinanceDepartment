@@ -203,17 +203,17 @@
               .map(
                 (record) => `
             <tr>
-              <td>${escapeHtml(record.type || "-")}</td>
-              <td>${escapeHtml(record.name || "-")}</td>
-              <td class="amount">${amountLabel(record.amount)}</td>
-              <td>${escapeHtml(record.date || "-")}</td>
-              <td>${formatNoteHtml(record.note)}</td>
+              <td data-label="قسم">${escapeHtml(record.type || "-")}</td>
+              <td data-label="نام / ادارہ">${escapeHtml(record.name || "-")}</td>
+              <td data-label="رقم" class="amount">${amountLabel(record.amount)}</td>
+              <td data-label="تاریخ">${escapeHtml(record.date || "-")}</td>
+              <td data-label="تفصیل">${formatNoteHtml(record.note)}</td>
             </tr>
           `,
               )
               .join("")
           : `
-            <tr>
+            <tr class="empty-row">
               <td colspan="5">ابھی کوئی ریکارڈ موجود نہیں۔</td>
             </tr>
           `;
@@ -222,6 +222,7 @@
 <html lang="ur" dir="rtl">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(meta.title)} - رپورٹ</title>
     <style>
       ${getFontFaceCss()}
@@ -309,6 +310,7 @@
         width: 100%;
         border-collapse: collapse;
         font-size: 13px;
+        table-layout: fixed;
       }
       th,
       td {
@@ -316,6 +318,10 @@
         padding: 9px 10px;
         text-align: right;
         vertical-align: top;
+      }
+      td {
+        word-break: break-word;
+        overflow-wrap: anywhere;
       }
       th {
         background: #f5f0e6;
@@ -338,6 +344,61 @@
         color: #5a5247;
         border-top: 1px dashed #e6ddcf;
         padding-top: 10px;
+      }
+      @media (max-width: 720px) {
+        .report {
+          padding: 16px 14px;
+        }
+        .report-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .report-meta {
+          grid-template-columns: 1fr;
+        }
+        .summary {
+          grid-template-columns: 1fr;
+        }
+        table,
+        thead,
+        tbody,
+        th,
+        tr,
+        td {
+          display: block;
+          width: 100%;
+        }
+        thead {
+          display: none;
+        }
+        tbody tr {
+          border: 1px solid #e6ddcf;
+          border-radius: 10px;
+          padding: 8px 10px;
+          margin-bottom: 10px;
+          background: #fff;
+        }
+        tbody tr:last-child {
+          margin-bottom: 0;
+        }
+        td {
+          border: none;
+          padding: 6px 0;
+        }
+        td::before {
+          content: attr(data-label);
+          display: block;
+          font-weight: 700;
+          color: #134236;
+          margin-bottom: 2px;
+        }
+        .amount {
+          white-space: normal;
+        }
+        .empty-row td {
+          text-align: center;
+          padding: 10px 0;
+        }
       }
       @page {
         size: A4;
